@@ -1,7 +1,7 @@
 package com.example.zer.geographytutorialsqlite;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +22,8 @@ public class LogIn extends Fragment {
         return new LogIn();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_log_in, container, false);
 
@@ -42,7 +40,15 @@ public class LogIn extends Fragment {
                 String passTmp = password.getText().toString();
 
                 if (!loginTmp.equals("") && !passTmp.equals("")) {
+                    MainActivity ma = new MainActivity();
+                    String pass = ma.createPass(password.getText().toString());
+                    String user = Db.getInstance(getContext()).getUserName(pass);
 
+                    if (login.getText().toString().equals(user)) {
+                        MainActivity.user = user;
+                        Intent intent = new Intent(getActivity(), Questionnaire.class);
+                        startActivity(intent);
+                    }
                 } else {
                     Toast.makeText(getContext(), "The login and/or password you entered is incorrect or the account does not exist",
                             Toast.LENGTH_LONG).show();

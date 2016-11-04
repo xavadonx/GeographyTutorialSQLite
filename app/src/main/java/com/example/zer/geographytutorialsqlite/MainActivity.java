@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -18,12 +19,20 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String SHAREDPREFS = "com.example.zer.geographytutorialsqlite";
     public static final String SALT = "example.zer";
+
+    public static String user = "";
+    private static String salt;
+
     private boolean isAvailableData;
+
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sp = getSharedPreferences(SHAREDPREFS, Context.MODE_PRIVATE);
+        saveSalt();
 
         isAvailableData = Db.getInstance(this).isAvailableData();
 
@@ -40,13 +49,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!isAvailableData) {
+        if (!isAvailableData) {
             Retrofit.getCountries(new Callback<List<Country>>() {
                 @Override
                 public void success(List<Country> countryList, Response response) {
                     for (Country c : countryList) {
-                        Db.getInstance(MainActivity.this).insertSubregion(c.subregion);
-                        Db.getInstance(MainActivity.this).insertCountries(c.subregion, c.name, c.capital);
+                        if (!c.subregion.equals("") && !c.capital.equals("")) {
+                            Db.getInstance(MainActivity.this).insertSubregion(c.subregion);
+                            Db.getInstance(MainActivity.this).insertCountries(c.subregion, c.name, c.capital);
+                        }
                     }
                 }
 
@@ -58,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static String md5(String s) {
-        final String MD5 = "MD5";
+    private String md5(String s) {
+        String result = "";
         try {
-            MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
             digest.update(s.getBytes());
 
             byte messageDigest[] = digest.digest();
@@ -77,11 +88,29 @@ public class MainActivity extends AppCompatActivity {
 
                 hexString.append(h);
             }
-            return hexString.toString();
+            result = hexString.toString();
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return "";
+        return result;
+    }
+
+    public String createPass(String pass) {
+        String passHash = md5(pass);
+        String saltHash = md5(salt);
+        String newPassHash = passHash + saltHash;
+        String result = md5(newPassHash);
+        return result;
+    }
+
+    private void saveSalt() {
+        if (sp.getString(SALT, "Unknown").equals("Unknown")) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(SALT, UUID.randomUUID().toString());
+            editor.apply();
+        } else {
+            salt = sp.getString(SALT, "Unknown");
+        }
     }
 }

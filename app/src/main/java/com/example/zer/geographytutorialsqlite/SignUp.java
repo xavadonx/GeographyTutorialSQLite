@@ -1,5 +1,8 @@
 package com.example.zer.geographytutorialsqlite;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,9 +16,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SignUp extends Fragment{
+public class SignUp extends Fragment {
 
-    private static boolean countryIsValid = false;
+    private String selectedCountryName = "";
 
     private EditText name;
     private EditText pass;
@@ -30,7 +33,7 @@ public class SignUp extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_log_in, container, false);
+        View root = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         name = (EditText) root.findViewById(R.id.fsu_name_et);
         pass = (EditText) root.findViewById(R.id.fsu_pass_et);
@@ -47,16 +50,14 @@ public class SignUp extends Fragment{
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                countryIsValid = position >= 0;
-//                setVisibilityLogIn();
-//                if (countryIsValid) {
-//                    selectedCountry = countries.get(position - 1);
-//                }
+                if (position > 0) {
+                    selectedCountryName = parent.getAdapter().getItem(position).toString();
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                countryIsValid = false;
+                selectedCountryName = "";
             }
         });
 
@@ -65,15 +66,23 @@ public class SignUp extends Fragment{
             public void onClick(View v) {
                 boolean loginIsValid = name.getText().toString().length() > 2;
                 boolean passIsValid = new PasswordValidator().validate(pass.getText().toString());
-                if(!loginIsValid || !passIsValid || !countryIsValid) {
+                if (!loginIsValid || !passIsValid || selectedCountryName.equals("")) {
                     Toast.makeText(getContext(), "The login, password and/or country you entered is incorrect", Toast.LENGTH_LONG).show();
-                }
-                else {
+                } else {
 
+                    Db.getInstance(getContext()).insertUser(name.getText().toString(),
+                            new MainActivity().createPass(pass.getText().toString()),
+                            selectedCountryName);
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.am_logincontainer, LogIn.newInstance())
+                            .commit();
                 }
             }
         });
 
         return root;
     }
+
+
 }

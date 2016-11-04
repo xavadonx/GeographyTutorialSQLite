@@ -1,21 +1,12 @@
 package com.example.zer.geographytutorialsqlite;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
-import static com.example.zer.geographytutorialsqlite.MainActivity.SHAREDPREFS;
 
 public class Db {
 
@@ -38,11 +29,36 @@ public class Db {
         return instance;
     }
 
-    public long insertUser(String username, String userpass) {
-        ContentValues cv = new ContentValues();
-        cv.put(DataBaseCreator.Users.USER_NAME, username);
-        cv.put(DataBaseCreator.Users.USER_PASS, userpass);
-        return database.insert(DataBaseCreator.Users.TABLE_NAME, null, cv);
+    public void insertUser(String username, String userpass, String countryname) {
+        String query = "insert into Users(user_name, user_pass, user_country) " +
+                "values('" + username + "', '" + userpass + "', " +
+                "(select _id from Countries where country_name = '" + countryname + "'))";
+        try {
+            database.execSQL(query);
+        } catch (Exception ex) {
+            Log.d("insertUser", ex.getMessage() + "\n" + query);
+        }
+//        ContentValues cv = new ContentValues();
+//        cv.put(DataBaseCreator.Users.USER_NAME, username);
+//        cv.put(DataBaseCreator.Users.USER_PASS, userpass);
+//        return database.insert(DataBaseCreator.Users.TABLE_NAME, null, cv);
+    }
+
+    public String getUserName(String pass) {
+        String result = "";
+        String query = "select user_name from Users where user_pass = '" + pass + "'";
+        Cursor cursor = database.rawQuery(query, null);
+        if (cursor != null) {
+            try {
+                cursor.moveToFirst();
+                result = cursor.getString(0);
+            } catch (Exception ex) {
+                Log.d("isAvailableData", ex.getMessage() + "\n" + query);
+            } finally {
+                cursor.close();
+            }
+        }
+        return result;
     }
 
     public boolean isAvailableData() {
@@ -74,8 +90,7 @@ public class Db {
                 name.replace("'", "") + "', '" + capital.replace("'", "") + "')";
         try {
             database.execSQL(query);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Log.d("insertCountries", ex.getMessage() + "\n" + query);
         }
     }
@@ -95,16 +110,40 @@ public class Db {
                 cursor.close();
             }
         }
-        if(regionId < 0) {
+        if (regionId < 0) {
             query = "insert into " + DataBaseCreator.Subregion.TABLE_NAME + "(" + DataBaseCreator.Subregion.SUBREGION_NAME + ") " +
                     "values('" + subregion.replace("'", "") + "');";
             try {
                 database.execSQL(query);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Log.d("insertSubregion", ex.getMessage() + "\n" + query);
             }
         }
+    }
+
+    public List<Country> getCountries(String user) {
+        List<Country> result = new ArrayList<>();
+        String query = "select c.country_name, c.capital, " +
+                "(select s.subregion_name from Subregions s where s._id = c.subregion_id) " +
+                "from Countries c " +
+                "where c.subregion_id = (select c1.subregion_id from Countries c1 where c1._id = " +
+                "       (select u.user_country from Users u where u.user_name = '" + user + "'))";
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor != null) {
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    result.add(new Country(cursor.getString(0), cursor.getString(1), cursor.getString(2)));
+                    cursor.moveToNext();
+                }
+            } catch (Exception ex) {
+                Log.d("getCountriesNames", ex.getMessage() + "\n" + query);
+            } finally {
+                cursor.close();
+            }
+        }
+        return result;
     }
 
     public List<String> getCountriesNames() {
@@ -116,7 +155,11 @@ public class Db {
         if (cursor != null) {
             try {
                 cursor.moveToFirst();
-                result.add(cursor.getString(0));
+                result.add("Select a country");
+                while (!cursor.isAfterLast()) {
+                    result.add(cursor.getString(0));
+                    cursor.moveToNext();
+                }
             } catch (Exception ex) {
                 Log.d("getCountriesNames", ex.getMessage() + "\n" + query);
             } finally {

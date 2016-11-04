@@ -25,11 +25,13 @@ public class DataBaseCreator extends SQLiteOpenHelper {
         public static final String TABLE_NAME = "Users";
         public static final String USER_NAME = "user_name";
         public static final String USER_PASS = "user_pass";
+        public static final String USER_COUNTRY = "user_country";
     }
 
     static String SCRIPT_CREATE_TBL_USERS = "CREATE TABLE " + Users.TABLE_NAME + " (" +
-            Users._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + Users.USER_NAME + " TEXT," +
-            Users.USER_PASS + " TEXT" +
+            Users._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + Users.USER_NAME + " TEXT, " +
+            Users.USER_PASS + " TEXT, " +
+            Users.USER_COUNTRY + " INTEGER REFERENCES Countries (_id) ON DELETE CASCADE" +
             ");";
 
     static String SCRIPT_CREATE_TBL_COUNTRIES = "CREATE TABLE " + Countries.TABLE_NAME + " (" +
