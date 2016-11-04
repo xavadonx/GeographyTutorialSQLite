@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="24sp"
+        android:id="@+id/fsu_name_tv" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_below="@+id/fsu_name_tv"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/fsu_name_et" />
+
+    <TextView
+        android:text="Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="24sp"
+        android:id="@+id/fsu_pass_tv"
+        android:layout_below="@+id/fsu_name_et"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="24sp"
+        android:id="@+id/fsu_country_tv"
+        android:layout_below="@+id/fsu_pass_et"
+        android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fsu_country_tv"
+        android:id="@+id/fsu_country_spinner"
+        android:layout_alignStart="@+id/fsu_pass_et"
+        android:layout_alignEnd="@+id/fsu_pass_et" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/fsu_pass_et"
+        android:layout_below="@+id/fsu_pass_tv"
+        android:layout_alignStart="@+id/fsu_name_et" />
+
+    <Button
+        android:text="Sign up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/fsu_sign_up"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="password must contain numbers, uppercase letter and be long 6 - 20 characters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fsu_pass_et"
+        android:id="@+id/fsu_pass_validate_message"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        android:textSize="8sp"
+        android:textColor="@android:color/holo_red_dark" />
+    
+</RelativeLayout>

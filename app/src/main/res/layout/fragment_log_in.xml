@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Login"
+        android:ems="10"
+        android:id="@+id/fli_login"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="Password"
+        android:ems="10"
+        android:layout_below="@+id/fli_login"
+        android:layout_alignStart="@+id/fli_login"
+        android:layout_marginTop="20dp"
+        android:id="@+id/fli_pass" />
+
+    <Button
+        android:text="Log In"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fli_pass"
+        android:layout_marginTop="20dp"
+        android:id="@+id/fli_log_in"
+        android:layout_alignEnd="@+id/fli_pass"
+        android:layout_alignStart="@+id/fli_pass" />
+
+    <Button
+        android:text="Sign Up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fli_log_in"
+        android:layout_marginTop="10dp"
+        android:id="@+id/fli_sign_up"
+        android:layout_alignEnd="@+id/fli_log_in"
+        android:layout_alignStart="@+id/fli_log_in" />
+
+</RelativeLayout>
